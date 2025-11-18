@@ -4,8 +4,13 @@ import { config } from './config';
 import routes from './presentation/routes';
 import { errorHandler } from './presentation/middlewares/errorHandler';
 import { UploadService } from './application/services/UploadService';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJSDoc from 'swagger-jsdoc'; // 👈 Nueva dependencia
+import swaggerOptions from './config/swagger-options';
 
 const app: Application = express();
+
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 // Middlewares
 app.use(cors({ origin: config.cors.origin }));
@@ -26,6 +31,12 @@ app.get('/health', (req: Request, res: Response) => {
 
 // API Routes
 app.use('/api', routes);
+
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec) // Usamos el objeto generado automáticamente
+);
 
 // 404 handler
 app.use((req: Request, res: Response) => {

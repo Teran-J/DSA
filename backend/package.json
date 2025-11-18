@@ -1,7 +1,7 @@
 {
   "name": "design-platform-backend",
   "version": "1.0.0",
-  "description": "Backend para plataforma de dise\u00f1o de estampados con arquitectura limpia",
+  "description": "Backend para plataforma de diseño de estampados con arquitectura limpia",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
@@ -33,7 +33,10 @@
     "express-validator": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "uuid": "^10.0.0",
+    "yamljs": "^0.3.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -43,6 +46,7 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/multer": "^1.4.11",
     "@types/node": "^20.14.10",
+    "@types/swagger-jsdoc": "^6.0.4",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^7.16.0",
     "@typescript-eslint/parser": "^7.16.0",
