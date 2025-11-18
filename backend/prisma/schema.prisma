@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER MODEL
+// ============================================
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String?
+  role      Role     @default(CLIENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  designs        Design[]
+  reviewsCreated Review[] @relation("ReviewerReviews")
+
+  @@index([email])
+  @@map("users")
+}
+
+enum Role {
+  CLIENT
+  DESIGNER
+  ADMIN
+}
+
+// ============================================
+// PRODUCT MODEL
+// ============================================
+
+model Product {
+  id              Int      @id @default(autoincrement())
+  name            String
+  category        String
+  baseModelUrl    String
+  availableColors Json // Array de strings: ["white", "black", "red"]
+  price           Decimal  @db.Decimal(10, 2)
+  thumbnailUrl    String?
+  description     String?
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  designs Design[]
+
+  @@index([category])
+  @@index([active])
+  @@map("products")
+}
+
+// ============================================
+// DESIGN MODEL
+// ============================================
+
+model Design {
+  id         Int          @id @default(autoincrement())
+  userId     Int
+  productId  Int
+  color      String
+  imageUrl   String
+  transforms Json // { position: {x,y,z}, rotation: {x,y,z}, scale: {x,y,z} }
+  status     DesignStatus @default(PENDING)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  // Relations
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  reviews Review[]
+
+  @@index([userId])
+  @@index([productId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("designs")
+}
+
+enum DesignStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ============================================
+// REVIEW MODEL
+// ============================================
+
+model Review {
+  id         Int          @id @default(autoincrement())
+  designId   Int
+  reviewerId Int
+  status     ReviewStatus
+  comment    String?      @db.Text
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  // Relations
+  design   Design @relation(fields: [designId], references: [id], onDelete: Cascade)
+  reviewer User   @relation("ReviewerReviews", fields: [reviewerId], references: [id], onDelete: Restrict)
+
+  @@index([designId])
+  @@index([reviewerId])
+  @@map("reviews")
+}
+
+enum ReviewStatus {
+  APPROVED
+  REJECTED
+}
